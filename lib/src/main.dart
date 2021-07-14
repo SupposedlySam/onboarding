@@ -37,6 +37,9 @@ class Onboarding extends StatefulWidget {
   ///Skip button visibility
   final bool isSkippable;
 
+  /// Whether the widget is wrapped with a Scaffold
+  final bool isStandalone;
+
   const Onboarding({
     Key? key,
     this.background = util.background,
@@ -48,6 +51,7 @@ class Onboarding extends StatefulWidget {
     this.pagesContentPadding = util.pageContentPadding,
     this.titleAndInfoPadding = util.titleAndInfoPadding,
     this.isSkippable = true,
+    this.isStandalone = true,
   }) : super(key: key);
 
   @override
@@ -183,42 +187,44 @@ class _OnboardingState extends State<Onboarding> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GestureDetector(
-        onHorizontalDragStart: _onHorizontalDragStart,
-        onHorizontalDragUpdate: _onHorizontalDragUpdate,
-        onHorizontalDragEnd: _onHorizontalDragEnd,
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: _getPages,
-              ),
+    return widget.isStandalone ? Scaffold(body: _buildBody()) : _buildBody();
+  }
+
+  Widget _buildBody() {
+    return GestureDetector(
+      onHorizontalDragStart: _onHorizontalDragStart,
+      onHorizontalDragUpdate: _onHorizontalDragUpdate,
+      onHorizontalDragEnd: _onHorizontalDragEnd,
+      child: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: _getPages,
             ),
-            Container(
-              decoration: BoxDecoration(
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: widget.background,
+              border: Border.all(
+                width: 0.0,
                 color: widget.background,
-                border: Border.all(
-                  width: 0.0,
-                  color: widget.background,
-                ),
-              ),
-              padding: widget.footerPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomIndicator(
-                    indicator: widget.indicator,
-                    netDragPercent: _netDragDistancePercent,
-                    pagesLength: widget.pages.length,
-                  ),
-                  _actionButton()
-                ],
               ),
             ),
-          ],
-        ),
+            padding: widget.footerPadding,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomIndicator(
+                  indicator: widget.indicator,
+                  netDragPercent: _netDragDistancePercent,
+                  pagesLength: widget.pages.length,
+                ),
+                _actionButton()
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
